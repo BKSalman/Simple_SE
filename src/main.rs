@@ -6,7 +6,7 @@ mod utils;
 
 #[get("/")]
 fn index() -> &'static str {
-    "Hello, world!"
+    "add https://simplese.herokuapp.com/search?cmd=%s as a search engine in the browser to use it directly from the URL bar"
 }
 
 #[get("/search?<cmd>")]
