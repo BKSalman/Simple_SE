@@ -6,7 +6,7 @@ pub fn get_command(query: &str) -> &str {
         let space_index = query.find(' ').unwrap_or(0);
         return &query[..space_index];
     }
-    return &query
+    query
 }
 
 #[cfg(test)]
