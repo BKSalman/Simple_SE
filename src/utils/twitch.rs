@@ -11,6 +11,8 @@ pub fn twitch_url(query: &str) -> String {
         String::from("https://twitch.tv/")
     } else if &query[..5] == "ttv @" {
         twitch_page(&query[5..])
+    } else if &query[..5] == "ttv #" {
+        twitch_category(&query[5..])
     } else if query == "ttv ppt" {
         twitch_popout()
     } else {
@@ -27,8 +29,13 @@ pub fn twitch_search(search:&str) -> String {
     format!("https://twitch.tv/search?term={}", encoded_search)
 }
 
+pub fn twitch_category(search:&str) -> String {
+    let encoded_search = utf8_percent_encode(search, FRAGMENT);
+    format!("https://twitch.tv/directory/game/{}", encoded_search)
+}
+
 pub fn twitch_popout() -> String {
-    String::from("https://www.twitch.tv/popout/bksalman/chat?popout=")
+    String::from("https://twitch.tv/popout/bksalman/chat?popout=")
 }
 
 #[cfg(test)]
@@ -59,7 +66,15 @@ mod tests {
     #[test]
     fn test_twitch_popout() {
         let actual = twitch_url("ttv ppt");
-        let expected = "https://www.twitch.tv/popout/bksalman/chat?popout=";
+        let expected = "https://twitch.tv/popout/bksalman/chat?popout=";
         assert_eq!(actual, expected);
     }
+    
+    #[test]
+    fn test_twitch_category() {
+        let actual = twitch_url("ttv #Just Chatting");
+        let expected = "https://twitch.tv/directory/game/Just%20Chatting";
+        assert_eq!(actual, expected);
+    }
+
 }
