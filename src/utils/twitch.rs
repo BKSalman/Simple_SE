@@ -13,6 +13,8 @@ pub fn twitch_url(query: &str) -> String {
         twitch_page(&query[5..])
     } else if &query[..5] == "ttv #" {
         twitch_category(&query[5..])
+    } else if &query[..5] == "ttv f" {
+        twitch_following()
     } else if query == "ttv ppt" {
         twitch_popout()
     } else {
@@ -36,6 +38,10 @@ pub fn twitch_category(search:&str) -> String {
 
 pub fn twitch_popout() -> String {
     String::from("https://twitch.tv/popout/bksalman/chat?popout=")
+}
+
+pub fn twitch_following() -> String {
+    String::from("https://twitch.tv/directory/following/live")
 }
 
 #[cfg(test)]
@@ -74,6 +80,13 @@ mod tests {
     fn test_twitch_category() {
         let actual = twitch_url("ttv #Just Chatting");
         let expected = "https://twitch.tv/directory/game/Just%20Chatting";
+        assert_eq!(actual, expected);
+    }
+    
+    #[test]
+    fn test_twitch_following() {
+        let actual = twitch_url("ttv f");
+        let expected = "https://twitch.tv/directory/following/live";
         assert_eq!(actual, expected);
     }
 
