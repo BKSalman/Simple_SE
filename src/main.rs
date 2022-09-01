@@ -8,10 +8,10 @@ mod utils;
 fn search(cmd: String) -> Redirect {
     let command = utils::get_command(&cmd.trim_end());
     let redirect_url = match command {
-        "tw" => {utils::twitter::twitter_url(&cmd)}
-        "gh" => {utils::github::github_url(&cmd)}
-        "ttv" => {utils::twitch::twitch_url(&cmd)}
-        _ => {utils::google::google_search(&cmd)}
+        "tw" => {utils::twitter::twitter_url(&cmd.trim_end())}
+        "gh" => {utils::github::github_url(&cmd.trim_end())}
+        "ttv" => {utils::twitch::twitch_url(&cmd.trim_end())}
+        _ => {utils::google::google_search(&cmd.trim_end())}
     };
     Redirect::to(redirect_url)
 }
