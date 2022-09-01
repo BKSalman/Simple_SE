@@ -6,7 +6,7 @@ mod utils;
 
 #[get("/search?<cmd>")]
 fn search(cmd: String) -> Redirect {
-    let command = utils::get_command(&cmd);
+    let command = utils::get_command(&cmd.trim_end());
     let redirect_url = match command {
         "tw" => {utils::twitter::twitter_url(&cmd)}
         "gh" => {utils::github::github_url(&cmd)}
