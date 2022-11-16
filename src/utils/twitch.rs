@@ -37,7 +37,7 @@ pub fn twitch_category(search:&str) -> String {
 }
 
 pub fn twitch_popout() -> String {
-    String::from("https://twitch.tv/popout/bksalman/chat?popout=")
+    String::from("https://twitch.tv/popout/SadMadLadSalman/chat?popout=")
 }
 
 pub fn twitch_following() -> String {
