@@ -6,5 +6,5 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-rocket ={ git = "https://github.com/SergioBenitez/Rocket.git", features = ["json"] }
+rocket = { version = "0.5.0-rc.2", features = ["tls", "json"] }
 percent-encoding = "2.1.0"
