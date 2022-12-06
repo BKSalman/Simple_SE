@@ -72,7 +72,7 @@ mod tests {
     #[test]
     fn test_twitch_popout() {
         let actual = twitch_url("ttv ppt");
-        let expected = "https://twitch.tv/popout/bksalman/chat?popout=";
+        let expected = "https://twitch.tv/popout/SadMadLadSalman/chat?popout=";
         assert_eq!(actual, expected);
     }
     

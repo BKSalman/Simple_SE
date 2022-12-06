@@ -2,6 +2,7 @@ pub mod google;
 pub mod twitter;
 pub mod github;
 pub mod twitch;
+pub mod view_media;
 
 pub fn get_command(query: &str) -> &str {
     if query.contains(' ') {

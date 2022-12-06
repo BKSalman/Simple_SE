@@ -6,12 +6,14 @@ mod utils;
 
 #[get("/search?<cmd>")]
 fn search(cmd: String) -> Redirect {
-    let command = utils::get_command(&cmd.trim_end());
+    let cmd = cmd.trim_end();
+    let command = utils::get_command(&cmd);
     let redirect_url = match command {
-        "tw" => {utils::twitter::twitter_url(&cmd.trim_end())}
-        "gh" => {utils::github::github_url(&cmd.trim_end())}
-        "ttv" => {utils::twitch::twitch_url(&cmd.trim_end())}
-        _ => {utils::google::google_search(&cmd.trim_end())}
+        "tw" => {utils::twitter::twitter_url(&cmd)}
+        "gh" => {utils::github::github_url(&cmd)}
+        "ttv" => {utils::twitch::twitch_url(&cmd)}
+        "vm" => {utils::view_media::video_media_url(&cmd)}
+        _ => {utils::google::google_search(&cmd)}
     };
     Redirect::to(redirect_url)
 }
