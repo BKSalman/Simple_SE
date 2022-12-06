@@ -30,4 +30,10 @@ mod tests {
         assert_eq!(actual, expected);
     }
 
+    #[test]
+    fn test_get_command_with_url() {
+        let actual = get_command("vm https://cdn.discordapp.com/attachments/575540483053453314/1049370018854473898/Frango_andando_shitpost240P.mp4");
+        let expected = "vm";
+        assert_eq!(actual, expected);
+    }
 }
