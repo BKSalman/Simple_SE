@@ -1,14 +1,12 @@
 use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
 
-const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ')
-.add(b'"')
-.add(b'<')
-.add(b'>')
-.add(b'`');
+const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 
 pub fn github_url(query: &str) -> String {
     if query == "gh" {
         String::from("https://github.com/")
+    } else if query == "gh new" {
+        github_new()
     } else if &query[..4] == "gh @" {
         github_page(&query[4..])
     } else {
@@ -16,11 +14,15 @@ pub fn github_url(query: &str) -> String {
     }
 }
 
-pub fn github_page(page:&str) -> String {
+fn github_new() -> String {
+    String::from("https://github.com/new")
+}
+
+pub fn github_page(page: &str) -> String {
     format!("https://github.com/{}", page)
 }
 
-pub fn github_search(search:&str) -> String {
+pub fn github_search(search: &str) -> String {
     let encoded_search = utf8_percent_encode(search, FRAGMENT);
     format!("https://github.com/search?q={}", encoded_search)
 }
@@ -28,32 +30,39 @@ pub fn github_search(search:&str) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
+    #[test]
+    fn test_github_new() {
+        let actual = github_url("gh new");
+        let expected = "https://github.com/new";
+        assert_eq!(actual, expected);
+    }
+
     #[test]
     fn test_github_page() {
         let actual = github_url("gh @bksalman");
         let expected = "https://github.com/bksalman";
-    assert_eq!(actual, expected);
+        assert_eq!(actual, expected);
     }
 
     #[test]
     fn test_github_repo() {
         let actual = github_url("gh @bksalman/letters_game");
         let expected = "https://github.com/bksalman/letters_game";
-    assert_eq!(actual, expected);
+        assert_eq!(actual, expected);
     }
 
     #[test]
     fn test_github_search() {
         let actual = github_url("gh something");
         let expected = "https://github.com/search?q=something";
-    assert_eq!(actual, expected);
+        assert_eq!(actual, expected);
     }
 
     #[test]
     fn test_github_search_with_encoding() {
         let actual = github_url("gh lmao something");
         let expected = "https://github.com/search?q=lmao%20something";
-    assert_eq!(actual, expected);
+        assert_eq!(actual, expected);
     }
 }
