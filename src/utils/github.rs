@@ -6,16 +6,12 @@ pub fn github_url(query: &str) -> String {
     if query == "gh" {
         String::from("https://github.com/")
     } else if query == "gh new" {
-        github_new()
-    } else if &query[..4] == "gh @" {
+        String::from("https://github.com/new")
+    } else if &query[..=3] == "gh @" {
         github_page(&query[4..])
     } else {
         github_search(&query[3..])
     }
-}
-
-fn github_new() -> String {
-    String::from("https://github.com/new")
 }
 
 pub fn github_page(page: &str) -> String {

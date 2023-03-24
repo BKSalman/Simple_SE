@@ -1,7 +1,8 @@
-pub mod google;
-pub mod twitter;
 pub mod github;
+pub mod google;
+pub mod nix;
 pub mod twitch;
+pub mod twitter;
 pub mod view_media;
 
 pub fn get_command(query: &str) -> &str {
@@ -15,14 +16,14 @@ pub fn get_command(query: &str) -> &str {
 #[cfg(test)]
 mod tests {
     use super::*;
-    
+
     #[test]
     fn test_get_command() {
         let actual = get_command("tw");
         let expected = "tw";
         assert_eq!(actual, expected);
     }
-    
+
     #[test]
     fn test_get_command_with_whitespace() {
         let actual = get_command("tw @fbOpenSource");
