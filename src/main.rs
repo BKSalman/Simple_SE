@@ -20,9 +20,10 @@ fn search(cmd: String) -> Redirect {
     Redirect::to(redirect_url)
 }
 
-#[launch]
-fn rocket() -> _ {
-    rocket::build()
+#[shuttle_runtime::main]
+async fn rocket() -> shuttle_rocket::ShuttleRocket {
+    Ok(rocket::build()
         .mount("/", routes![search])
         .mount("/", FileServer::from("static"))
+        .into())
 }
