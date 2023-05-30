@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use rocket::{fs::FileServer, response::Redirect};
 
 #[macro_use]
@@ -21,9 +23,11 @@ fn search(cmd: String) -> Redirect {
 }
 
 #[shuttle_runtime::main]
-async fn rocket() -> shuttle_rocket::ShuttleRocket {
+async fn rocket(
+    #[shuttle_static_folder::StaticFolder(folder = "static")] static_folder: PathBuf,
+) -> shuttle_rocket::ShuttleRocket {
     Ok(rocket::build()
         .mount("/", routes![search])
-        .mount("/", FileServer::from("static"))
+        .mount("/", FileServer::from(static_folder))
         .into())
 }
