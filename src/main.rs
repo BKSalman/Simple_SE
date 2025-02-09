@@ -1,6 +1,4 @@
-use std::path::PathBuf;
-
-use rocket::{fs::FileServer, response::Redirect};
+use rocket::{fs::FileServer, response::Redirect, Config};
 
 #[macro_use]
 extern crate rocket;
@@ -22,12 +20,19 @@ fn search(cmd: String) -> Redirect {
     Redirect::to(redirect_url)
 }
 
-#[shuttle_runtime::main]
-async fn rocket(
-    #[shuttle_static_folder::StaticFolder(folder = "static")] static_folder: PathBuf,
-) -> shuttle_rocket::ShuttleRocket {
-    Ok(rocket::build()
+#[rocket::launch]
+async fn rocket() -> _ {
+    let args = std::env::args().collect::<Vec<String>>();
+
+    let rocket = rocket::build()
         .mount("/", routes![search])
-        .mount("/", FileServer::from(static_folder))
-        .into())
+        .mount("/", FileServer::from("static/"));
+
+    match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
+        [_cmd, "--port", port] => rocket.configure(Config {
+            port: port.parse::<u16>().unwrap(),
+            ..Default::default()
+        }),
+        _ => rocket,
+    }
 }
