@@ -1,3 +1,5 @@
+use std::{net::IpAddr, str::FromStr};
+
 use rocket::{fs::FileServer, response::Redirect, Config};
 
 #[macro_use]
@@ -31,6 +33,11 @@ async fn rocket() -> _ {
     match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
         [_cmd, "--port", port] => rocket.configure(Config {
             port: port.parse::<u16>().unwrap(),
+            ..Default::default()
+        }),
+        [_cmd, "--address", address, "--port", port] => rocket.configure(Config {
+            port: port.parse::<u16>().unwrap(),
+            address: address.parse::<IpAddr>().unwrap(),
             ..Default::default()
         }),
         _ => rocket,
