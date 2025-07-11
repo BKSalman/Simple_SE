@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    flake-utils.url = "github:numtide/flake-utils";
     rust-overlay.url = "github:oxalica/rust-overlay";
     crane = {
       url = "github:ipetkov/crane";
@@ -11,12 +10,12 @@
     };
   };
   
-  outputs = {nixpkgs, flake-utils, rust-overlay, crane, ... }:
-    flake-utils.lib.eachDefaultSystem (system:
+  outputs = {nixpkgs, rust-overlay, crane, ... }:
       let
-        overlays = [ (import rust-overlay) ];
+        system = "x86_64-linux";
         pkgs = import nixpkgs {
-          inherit system overlays;
+          inherit system;
+          overlays = [ (import rust-overlay) ];
         };
 
         craneLib = (crane.mkLib nixpkgs.legacyPackages.${system});
@@ -45,7 +44,7 @@
       in
       with pkgs;
       {
-        devShells.default = mkShell {
+        devShells.${system}.default = mkShell {
           buildInputs = [
             (rust-bin.stable.latest.default.override {
               extensions = [ "rust-src" "rust-analyzer" ];
@@ -56,7 +55,7 @@
           ];
         };
 
-        packages = rec {
+        packages.${system} = rec {
           simple_se = craneLib.buildPackage {
             inherit src;
 
@@ -110,8 +109,7 @@
             };
           };
 
-        formatter.x86_64-linux = legacyPackages.${system}.nixpkgs-fmt;
-      }
-    );
+        formatter.x86_64-linux = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
+      };
 
 }
