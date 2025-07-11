@@ -1,4 +1,4 @@
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 
@@ -15,12 +15,12 @@ pub fn github_url(query: &str) -> String {
 }
 
 pub fn github_page(page: &str) -> String {
-    format!("https://github.com/{}", page)
+    format!("https://github.com/{page}")
 }
 
 pub fn github_search(search: &str) -> String {
     let encoded_search = utf8_percent_encode(search, FRAGMENT);
-    format!("https://github.com/search?q={}", encoded_search)
+    format!("https://github.com/search?q={encoded_search}")
 }
 
 #[cfg(test)]

@@ -1,10 +1,10 @@
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 
 pub fn google_search(search: &str) -> String {
     let encoded_search = utf8_percent_encode(search, FRAGMENT);
-    format!("https://google.com/search?q={}", encoded_search)
+    format!("https://google.com/search?q={encoded_search}")
 }
 
 #[cfg(test)]

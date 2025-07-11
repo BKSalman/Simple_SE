@@ -1,4 +1,4 @@
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 
@@ -13,12 +13,12 @@ pub fn twitter_url(query: &str) -> String {
 }
 
 pub fn twitter_profile(profile: &str) -> String {
-    format!("https://twitter.com/{}", profile)
+    format!("https://twitter.com/{profile}")
 }
 
 pub fn twitter_search(search: &str) -> String {
     let encoded_search = utf8_percent_encode(search, FRAGMENT);
-    format!("https://twitter.com/search?q={}", encoded_search)
+    format!("https://twitter.com/search?q={encoded_search}")
 }
 
 #[cfg(test)]

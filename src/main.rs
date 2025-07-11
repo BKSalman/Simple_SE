@@ -1,13 +1,13 @@
-use std::net::{SocketAddr, IpAddr, Ipv4Addr};
+use std::net::{IpAddr, Ipv4Addr, SocketAddr};
 
 use axum::{
-    routing::{get, get_service},
     Router,
-    response::Redirect,
     extract::Query,
+    response::Redirect,
+    routing::{get, get_service},
 };
-use tower_http::services::ServeDir;
 use serde::{Deserialize, Serialize};
+use tower_http::services::ServeDir;
 
 mod utils;
 
@@ -18,15 +18,15 @@ struct QueryParams {
 
 async fn search(Query(query): Query<QueryParams>) -> Redirect {
     let cmd = query.cmd.trim();
-    let command = utils::get_command(&cmd);
+    let command = utils::get_command(cmd);
 
     let redirect_url = match command {
-        "tw" => utils::twitter::twitter_url(&cmd),
-        "gh" => utils::github::github_url(&cmd),
-        "ttv" => utils::twitch::twitch_url(&cmd),
-        "n" => utils::nix::nix_url(&cmd),
-        "vm" => utils::view_media::video_media_url(&cmd),
-        _ => utils::google::google_search(&cmd),
+        "tw" => utils::twitter::twitter_url(cmd),
+        "gh" => utils::github::github_url(cmd),
+        "ttv" => utils::twitch::twitch_url(cmd),
+        "n" => utils::nix::nix_url(cmd),
+        "vm" => utils::view_media::video_media_url(cmd),
+        _ => utils::google::google_search(cmd),
     };
 
     Redirect::to(&redirect_url)
@@ -42,12 +42,13 @@ async fn main() {
         .fallback_service(get_service(ServeDir::new("static/")));
 
     let socket_addr = match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
-        [_cmd, "--port", port] => {
-            SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), port.parse().unwrap())
-        },
+        [_cmd, "--port", port] => SocketAddr::new(
+            IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)),
+            port.parse().unwrap(),
+        ),
         [_cmd, "--address", address, "--port", port] => {
             SocketAddr::new(address.parse().unwrap(), port.parse().unwrap())
-        },
+        }
         _ => SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 4433),
     };
 

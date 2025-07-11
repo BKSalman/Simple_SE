@@ -1,4 +1,4 @@
-use percent_encoding::{utf8_percent_encode, AsciiSet, CONTROLS};
+use percent_encoding::{AsciiSet, CONTROLS, utf8_percent_encode};
 
 const FRAGMENT: &AsciiSet = &CONTROLS.add(b' ').add(b'"').add(b'<').add(b'>').add(b'`');
 
@@ -19,17 +19,17 @@ pub fn twitch_url(query: &str) -> String {
 }
 
 pub fn twitch_page(page: &str) -> String {
-    format!("https://twitch.tv/{}", page)
+    format!("https://twitch.tv/{page}")
 }
 
 pub fn twitch_search(search: &str) -> String {
     let encoded_search = utf8_percent_encode(search, FRAGMENT);
-    format!("https://twitch.tv/search?term={}", encoded_search)
+    format!("https://twitch.tv/search?term={encoded_search}")
 }
 
 pub fn twitch_category(search: &str) -> String {
     let encoded_search = utf8_percent_encode(search, FRAGMENT);
-    format!("https://twitch.tv/directory/game/{}", encoded_search)
+    format!("https://twitch.tv/directory/game/{encoded_search}")
 }
 
 pub fn twitch_popout() -> String {
