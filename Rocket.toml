@@ -1,8 +1,0 @@
-# [release]
-# port = 443
-# address = "0.0.0.0"
-
-
-# [default.tls]
-# key = "/etc/letsencrypt/live/se.bksalman.com/privkey.pem"
-# certs = "/etc/letsencrypt/live/se.bksalman.com/fullchain.pem"

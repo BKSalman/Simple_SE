@@ -1,16 +1,25 @@
-use std::{net::IpAddr, str::FromStr};
+use std::net::{SocketAddr, IpAddr, Ipv4Addr};
 
-use rocket::{fs::FileServer, response::Redirect, Config};
-
-#[macro_use]
-extern crate rocket;
+use axum::{
+    routing::{get, get_service},
+    Router,
+    response::Redirect,
+    extract::Query,
+};
+use tower_http::services::ServeDir;
+use serde::{Deserialize, Serialize};
 
 mod utils;
 
-#[get("/search?<cmd>")]
-fn search(cmd: String) -> Redirect {
-    let cmd = cmd.trim();
+#[derive(Deserialize, Serialize)]
+struct QueryParams {
+    cmd: String,
+}
+
+async fn search(Query(query): Query<QueryParams>) -> Redirect {
+    let cmd = query.cmd.trim();
     let command = utils::get_command(&cmd);
+
     let redirect_url = match command {
         "tw" => utils::twitter::twitter_url(&cmd),
         "gh" => utils::github::github_url(&cmd),
@@ -19,27 +28,29 @@ fn search(cmd: String) -> Redirect {
         "vm" => utils::view_media::video_media_url(&cmd),
         _ => utils::google::google_search(&cmd),
     };
-    Redirect::to(redirect_url)
+
+    Redirect::to(&redirect_url)
 }
 
-#[rocket::launch]
-async fn rocket() -> _ {
+#[tokio::main]
+async fn main() {
     let args = std::env::args().collect::<Vec<String>>();
+    tracing_subscriber::fmt::init();
 
-    let rocket = rocket::build()
-        .mount("/", routes![search])
-        .mount("/", FileServer::from("static/"));
+    let app = Router::new()
+        .route("/search", get(search))
+        .fallback_service(get_service(ServeDir::new("static/")));
 
-    match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
-        [_cmd, "--port", port] => rocket.configure(Config {
-            port: port.parse::<u16>().unwrap(),
-            ..Default::default()
-        }),
-        [_cmd, "--address", address, "--port", port] => rocket.configure(Config {
-            port: port.parse::<u16>().unwrap(),
-            address: address.parse::<IpAddr>().unwrap(),
-            ..Default::default()
-        }),
-        _ => rocket,
-    }
+    let socket_addr = match &args.iter().map(String::as_str).collect::<Vec<_>>()[..] {
+        [_cmd, "--port", port] => {
+            SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), port.parse().unwrap())
+        },
+        [_cmd, "--address", address, "--port", port] => {
+            SocketAddr::new(address.parse().unwrap(), port.parse().unwrap())
+        },
+        _ => SocketAddr::new(IpAddr::V4(Ipv4Addr::new(127, 0, 0, 1)), 4433),
+    };
+
+    let listener = tokio::net::TcpListener::bind(socket_addr).await.unwrap();
+    axum::serve(listener, app).await.unwrap();
 }

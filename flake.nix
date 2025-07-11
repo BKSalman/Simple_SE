@@ -4,13 +4,10 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     rust-overlay.url = "github:oxalica/rust-overlay";
-    crane = {
-      url = "github:ipetkov/crane";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    crane.url = "github:ipetkov/crane";
   };
   
-  outputs = {nixpkgs, rust-overlay, crane, ... }:
+  outputs = {self, nixpkgs, rust-overlay, crane, ... }:
       let
         system = "x86_64-linux";
         pkgs = import nixpkgs {
@@ -68,7 +65,7 @@
             ];
 
             postInstall = ''
-              install -Dm644 "$src/static/images/URLbar.png" -t "$out/static/images/URLbar.png"
+              install -Dm644 "$src/static/images/URLbar.png" "$out/static/images/URLbar.png"
               install -Dm644 "$src/static/index.html" -t "$out/static/"
               install -Dm644 "$src/static/styles.css" -t "$out/static/"
             '';
@@ -77,8 +74,15 @@
           default = simple_se;
         };
 
+        overlays.default = final: prev: {
+          simple_se = self.packages.${system}.simple_se;
+        };
+
         nixosModules.simple-se-module =
-          { config, lib, pkgs, ... }: {
+          { config, lib, pkgs, ... }:
+          let
+            simple_se = self.packages.${system}.default;
+          in{
             options.services.simple_se = with lib; {
               enable = mkOption {
                 type = types.bool;
@@ -93,7 +97,7 @@
               };
             };
 
-            config = mkIf config.services.simple_se.enable {
+            config = lib.mkIf config.services.simple_se.enable {
               systemd.services.simple_se-http-server = {
                 description = "Simple_SE HTTP Server";
                 after = [ "network.target" ];
@@ -111,5 +115,4 @@
 
         formatter.x86_64-linux = nixpkgs.legacyPackages.${system}.nixpkgs-fmt;
       };
-
 }
